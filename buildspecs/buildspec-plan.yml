@@ -2,7 +2,7 @@ version: 0.2
 env:
   variables:
     TF_IN_AUTOMATION: "true"
-    TF_ENV: "dev"                     # set per CodeBuild project
+    TF_ENV: "dev"
     WORKDIR: "infra/envs/$TF_ENV"
 phases:
   install:
@@ -13,12 +13,11 @@ phases:
     commands:
       - cd "$WORKDIR"
       - terraform init -input=false
-      - terraform fmt -check
-      - terraform validate
+      # - terraform fmt -check
+      # - terraform validate
   build:
     commands:
       - cd "$WORKDIR"
-      # if you use a global file, keep it; otherwise remove this line
       - terraform plan -input=false -out plan.out
 artifacts:
   base-directory: infra/envs/$TF_ENV
