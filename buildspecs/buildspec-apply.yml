@@ -3,6 +3,7 @@ env:
   variables:
     TF_IN_AUTOMATION: "true"
     TF_ENV: "dev"
+    WORKDIR: "infra/envs/$TF_ENV"
 phases:
   install:
     commands:
@@ -10,8 +11,9 @@ phases:
       - unzip tf.zip && mv terraform /usr/local/bin/ && rm tf.zip
   pre_build:
     commands:
-      - cd infra/envs/$TF_ENV
+      - cd "$WORKDIR"
       - terraform init -input=false
   build:
     commands:
-      - terraform apply -input=false -auto-approve -var-file=../../globals/common.tfvars
+      - cd "$WORKDIR"
+      - terraform apply -input=false -auto-approve

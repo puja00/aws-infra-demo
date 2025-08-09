@@ -2,7 +2,8 @@ version: 0.2
 env:
   variables:
     TF_IN_AUTOMATION: "true"
-    TF_ENV: "dev"   # override per CodeBuild project for stage/prod
+    TF_ENV: "dev"                     # set per CodeBuild project
+    WORKDIR: "infra/envs/$TF_ENV"
 phases:
   install:
     commands:
@@ -10,13 +11,16 @@ phases:
       - unzip tf.zip && mv terraform /usr/local/bin/ && rm tf.zip
   pre_build:
     commands:
-      - cd infra/envs/$TF_ENV
+      - cd "$WORKDIR"
       - terraform init -input=false
       - terraform fmt -check
       - terraform validate
   build:
     commands:
-      - terraform plan -input=false -var-file=../../globals/common.tfvars -out plan.out
+      - cd "$WORKDIR"
+      # if you use a global file, keep it; otherwise remove this line
+      - terraform plan -input=false -out plan.out
 artifacts:
+  base-directory: infra/envs/$TF_ENV
   files:
-    - infra/envs/$TF_ENV/plan.out
+    - plan.out
