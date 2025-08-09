@@ -29,10 +29,8 @@ phases:
         WORKDIR="infra/envs/${TF_ENV}"
         cd "${WORKDIR}"
         echo "PWD: $(pwd)"
-        echo "Listing contents before plan:"
         ls -la
         terraform plan -input=false -out plan.out
-        # copy the plan to repo root so artifacts don’t need dynamic base-directory
         cp plan.out "${CODEBUILD_SRC_DIR}/plan.out"
 
 artifacts:
