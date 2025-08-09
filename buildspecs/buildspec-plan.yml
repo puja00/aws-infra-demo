@@ -1,0 +1,31 @@
+version: 0.2
+env:
+  variables:
+    TF_IN_AUTOMATION: "true"
+    TF_ENV: "dev"
+    WORKDIR: "infra/envs/$TF_ENV"
+phases:
+  install:
+    commands:
+      - curl -fsSL https://releases.hashicorp.com/terraform/1.8.5/terraform_1.8.5_linux_amd64.zip -o tf.zip
+      - unzip tf.zip && mv terraform /usr/local/bin/ && rm tf.zip
+  pre_build:
+    commands:
+      - cd "$WORKDIR"
+      - echo "Current working directory: $(pwd)"
+      - echo "Listing contents of $WORKDIR:"
+      - ls -la "$WORKDIR"
+      - terraform init -input=false
+      - terraform fmt -check
+      - terraform validate
+  build:
+    commands:
+      - cd "$WORKDIR"
+      - echo "Current working directory: $(pwd)"
+      - echo "Listing contents of $WORKDIR before plan:"
+      - ls -la "$WORKDIR"
+      - terraform plan -input=false -out plan.out
+artifacts:
+  base-directory: infra/envs/$TF_ENV
+  files:
+    - plan.out

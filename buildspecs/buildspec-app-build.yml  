@@ -1,0 +1,14 @@
+version: 0.2
+phases:
+  install:
+    commands:
+      - echo "Install deps/build app here"
+  build:
+    commands:
+      - mkdir -p artifact
+      - cp -r appspec.yml scripts artifact/
+      - cp -r src artifact/              # or your build output (jar, zip, etc.)
+artifacts:
+  files:
+    - artifact/**/*
+  discard-paths: no
