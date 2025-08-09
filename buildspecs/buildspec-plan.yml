@@ -1,0 +1,22 @@
+version: 0.2
+env:
+  variables:
+    TF_IN_AUTOMATION: "true"
+    TF_ENV: "dev"   # override per CodeBuild project for stage/prod
+phases:
+  install:
+    commands:
+      - curl -fsSL https://releases.hashicorp.com/terraform/1.8.5/terraform_1.8.5_linux_amd64.zip -o tf.zip
+      - unzip tf.zip && mv terraform /usr/local/bin/ && rm tf.zip
+  pre_build:
+    commands:
+      - cd infra/envs/$TF_ENV
+      - terraform init -input=false
+      - terraform fmt -check
+      - terraform validate
+  build:
+    commands:
+      - terraform plan -input=false -var-file=../../globals/common.tfvars -out plan.out
+artifacts:
+  files:
+    - infra/envs/$TF_ENV/plan.out

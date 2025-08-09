@@ -1,0 +1,17 @@
+version: 0.2
+env:
+  variables:
+    TF_IN_AUTOMATION: "true"
+    TF_ENV: "dev"
+phases:
+  install:
+    commands:
+      - curl -fsSL https://releases.hashicorp.com/terraform/1.8.5/terraform_1.8.5_linux_amd64.zip -o tf.zip
+      - unzip tf.zip && mv terraform /usr/local/bin/ && rm tf.zip
+  pre_build:
+    commands:
+      - cd infra/envs/$TF_ENV
+      - terraform init -input=false
+  build:
+    commands:
+      - terraform apply -input=false -auto-approve -var-file=../../globals/common.tfvars

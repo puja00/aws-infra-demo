@@ -1,1 +1,2 @@
-# AWS Infra Demo
+# aws-pipeline-demo
+Learning purpose
