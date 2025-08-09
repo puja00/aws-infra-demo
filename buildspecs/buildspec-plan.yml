@@ -12,29 +12,29 @@ phases:
       - unzip tf.zip && mv terraform /usr/local/bin/ && rm tf.zip
 
   pre_build:
-  commands:
-    - |
-      WORKDIR="infra/envs/${TF_ENV}"
-      echo "WORKDIR=${WORKDIR}"
-      cd "${WORKDIR}"
-      echo "PWD: $(pwd)"
-      ls -la
-      terraform init -input=false
-      terraform fmt -check
-      terraform validate
-      
+    commands:
+      - |
+        WORKDIR="infra/envs/${TF_ENV}"
+        echo "WORKDIR=${WORKDIR}"
+        cd "${WORKDIR}"
+        echo "PWD: $(pwd)"
+        ls -la
+        terraform init -input=false
+        terraform fmt -check
+        terraform validate
+
   build:
     commands:
-      - WORKDIR="infra/envs/${TF_ENV}"
-      - cd "${WORKDIR}"
-      - echo "PWD: $(pwd)"
-      - echo "Listing contents before plan:"
-      - ls -la
-      - terraform plan -input=false -out plan.out
-      # copy the plan to repo root so artifacts don’t need dynamic base-directory
-      - cp plan.out "${CODEBUILD_SRC_DIR}/plan.out"
+      - |
+        WORKDIR="infra/envs/${TF_ENV}"
+        cd "${WORKDIR}"
+        echo "PWD: $(pwd)"
+        echo "Listing contents before plan:"
+        ls -la
+        terraform plan -input=false -out plan.out
+        # copy the plan to repo root so artifacts don’t need dynamic base-directory
+        cp plan.out "${CODEBUILD_SRC_DIR}/plan.out"
 
 artifacts:
-  # keep it simple: always publish from repo root
   files:
     - plan.out
