@@ -12,12 +12,18 @@ phases:
   pre_build:
     commands:
       - cd "$WORKDIR"
+      - echo "Current working directory: $(pwd)"
+      - echo "Listing contents of $WORKDIR:"
+      - ls -la "$WORKDIR"
       - terraform init -input=false
-      # - terraform fmt -check
-      # - terraform validate
+      - terraform fmt -check
+      - terraform validate
   build:
     commands:
       - cd "$WORKDIR"
+      - echo "Current working directory: $(pwd)"
+      - echo "Listing contents of $WORKDIR before plan:"
+      - ls -la "$WORKDIR"
       - terraform plan -input=false -out plan.out
 artifacts:
   base-directory: infra/envs/$TF_ENV
