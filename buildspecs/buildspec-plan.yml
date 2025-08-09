@@ -12,17 +12,17 @@ phases:
       - unzip tf.zip && mv terraform /usr/local/bin/ && rm tf.zip
 
   pre_build:
-    commands:
-      - WORKDIR="infra/envs/${TF_ENV}"
-      - echo "WORKDIR=${WORKDIR}"
-      - cd "${WORKDIR}"
-      - echo "PWD: $(pwd)"
-      - echo "Listing contents:"
-      - ls -la
-      - terraform init -input=false
-      - terraform fmt -check
-      - terraform validate
-
+  commands:
+    - |
+      WORKDIR="infra/envs/${TF_ENV}"
+      echo "WORKDIR=${WORKDIR}"
+      cd "${WORKDIR}"
+      echo "PWD: $(pwd)"
+      ls -la
+      terraform init -input=false
+      terraform fmt -check
+      terraform validate
+      
   build:
     commands:
       - WORKDIR="infra/envs/${TF_ENV}"
