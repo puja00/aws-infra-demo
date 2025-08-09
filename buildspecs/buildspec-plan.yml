@@ -1,31 +1,40 @@
 version: 0.2
+
 env:
   variables:
     TF_IN_AUTOMATION: "true"
     TF_ENV: "dev"
-    WORKDIR: "infra/envs/$TF_ENV"
+
 phases:
   install:
     commands:
       - curl -fsSL https://releases.hashicorp.com/terraform/1.8.5/terraform_1.8.5_linux_amd64.zip -o tf.zip
       - unzip tf.zip && mv terraform /usr/local/bin/ && rm tf.zip
+
   pre_build:
     commands:
-      - cd "$WORKDIR"
-      - echo "Current working directory: $(pwd)"
-      - echo "Listing contents of $WORKDIR:"
-      - ls -la "$WORKDIR"
+      - WORKDIR="infra/envs/${TF_ENV}"
+      - echo "WORKDIR=${WORKDIR}"
+      - cd "${WORKDIR}"
+      - echo "PWD: $(pwd)"
+      - echo "Listing contents:"
+      - ls -la
       - terraform init -input=false
       - terraform fmt -check
       - terraform validate
+
   build:
     commands:
-      - cd "$WORKDIR"
-      - echo "Current working directory: $(pwd)"
-      - echo "Listing contents of $WORKDIR before plan:"
-      - ls -la "$WORKDIR"
+      - WORKDIR="infra/envs/${TF_ENV}"
+      - cd "${WORKDIR}"
+      - echo "PWD: $(pwd)"
+      - echo "Listing contents before plan:"
+      - ls -la
       - terraform plan -input=false -out plan.out
+      # copy the plan to repo root so artifacts don’t need dynamic base-directory
+      - cp plan.out "${CODEBUILD_SRC_DIR}/plan.out"
+
 artifacts:
-  base-directory: infra/envs/$TF_ENV
+  # keep it simple: always publish from repo root
   files:
     - plan.out
